@@ -18,9 +18,6 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="2910_noSTL_noSTRUCT.c" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{16098FC1-0256-4A22-9C20-E851A6C1B683}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -144,6 +141,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="2910.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
