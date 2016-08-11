@@ -4,8 +4,6 @@
 자신보다 작은 막대가 stack의 top에 올 때까지 하나씩 pop하며 넓이를 계산해나간다.
 """
 
-import sys
-
 stack = []
 
 while True:
