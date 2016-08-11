@@ -1,75 +1,81 @@
 import sys
 
+p = None  # pattern
+t = None  # text
+left = []
+right = []
 
-pattern = list(sys.stdin.readline().rstrip())
-text = list(sys.stdin.readline().rstrip())
-result = []
-result2 = []
+p_len = None  # length of pattern
+t_len = None  # length of text
 
-len_pattern = len(pattern)
-len_text = len(text)
-
-l_idx = 0  # index from left side
-r_idx = len_text - 1  # index from right side
+l_idx = None  # index from left
+r_idx = None  # index from right
 
 
 def match_left():
-    pattern_idx = 0
-    global l_idx
-    global result
-    while l_idx < len_text:
-        if pattern[0] == text[l_idx]:
-            pattern_idx = 1
-            while (l_idx < len_text and pattern_idx < len_pattern
-                    and pattern[pattern_idx] == text[l_idx + pattern_idx]):
-                pattern_idx += 1
-            if pattern_idx == len_pattern:
-                l_idx += pattern_idx
-                break
-            if pattern_idx != len_pattern:
-                for i in range(pattern_idx):
-                    result.append(text[l_idx + i])
-                l_idx += pattern_idx
+    global left, right, p_len, t_len, l_idx, r_idx
+    p_matched_cnt = 0
+    while l_idx <= r_idx:
+        if p_matched_cnt == p_len:
+            l_idx += p_len
+            break
+        elif (l_idx + p_matched_cnt <= r_idx
+                and t[l_idx + p_matched_cnt] == p[p_matched_cnt]):
+            p_matched_cnt += 1
+        elif p_matched_cnt != 0:
+            for i in range(p_matched_cnt):
+                left.append(t[l_idx + i])
+            l_idx += p_matched_cnt
+            p_matched_cnt = 0
         else:
-            result.append(text[l_idx])
+            left.append(t[l_idx])
             l_idx += 1
-    if l_idx == len_text:
-        return False
-    else:
+    if p_matched_cnt == p_len:
         return True
+    else:
+        return False
 
 
 def match_right():
-    pattern_idx = 0
-    global r_idx
-    global result2
-    while r_idx >= 0:
-        if pattern[len_pattern - 1] == text[r_idx]:
-            pattern_idx = 1
-            while (r_idx >= 0 and pattern_idx < len_pattern
-                    and pattern[(len_pattern - 1) - pattern_idx]
-                        == text[r_idx - pattern_idx]):
-                pattern_idx += 1
-            if pattern_idx == len_pattern:
-                r_idx -= pattern_idx
-                break
-            if pattern_idx != len_pattern:
-                for i in range(pattern_idx):
-                    result2.append(text[r_idx - i])
-                r_idx -= pattern_idx
+    global left, right, p_len, t_len, l_idx, r_idx
+    p_matched_cnt = 0
+    while r_idx >= l_idx:
+        if p_matched_cnt == p_len:
+            r_idx -= p_len
+            break
+        elif (r_idx - p_matched_cnt >= l_idx
+                and t[r_idx - p_matched_cnt] == p[(p_len - 1) - p_matched_cnt]):
+            p_matched_cnt += 1
+        elif p_matched_cnt != 0:
+            for i in range(p_matched_cnt):
+                right.append(t[r_idx - i])
+            r_idx -= p_matched_cnt
+            p_matched_cnt = 0
         else:
-            result2.append(text[r_idx])
+            right.append(t[r_idx])
             r_idx -= 1
-    if r_idx == -1:
-        return False
-    else:
+    if p_matched_cnt == p_len:
         return True
+    else:
+        return False
 
 
-while match_right():
-    print(result2)
-    print("r_idx: %d " % r_idx)
-while r_idx >= 0:
-    result2.append(text[r_idx])
-    r_idx -= 1
-print(result2)
+if __name__ == "__main__":
+    p = sys.stdin.readline().rstrip()
+    t = sys.stdin.readline().rstrip()
+    p_len = len(p)
+    t_len = len(t)
+    l_idx = 0
+    r_idx = t_len - 1
+    while True:
+        if match_left() == False:
+            break
+        if match_right() == False:
+            break
+    result = ""
+    for x in left:
+        result += x
+    right.reverse()
+    for x in right:
+        result += x
+    sys.stdout.write(result)
