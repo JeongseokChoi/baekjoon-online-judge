@@ -1,56 +1,14 @@
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <queue>
 using namespace std;
 
 
-#define TO_ROW(pos) ((pos) / 100)
-#define TO_COL(pos) ((pos) % 100)
-
-
-struct cell_t
-{
-  int pos;  // row*100 + col
-  int level;
-  bool is_visited;
-} maze[100][100];
-
-
-int solve(cell_t (*maze)[100], int row, int col)
-{
-  queue<struct cell_t> opening_queue;
-
-  opening_queue.push(maze[0][0]);
-  while (!opening_queue.empty())
-  {
-    struct cell_t curr = opening_queue.front();
-    opening_queue.pop();
-    if (curr.is_visited == false)
-    {
-      if (TO_ROW(curr.pos) == row - 1 && TO_COL(curr.pos) == col - 1)
-        return curr.level;
-
-      maze[TO_ROW(curr.pos)][TO_COL(curr.pos)].is_visited = true;
-
-      // '오른쪽'부터 시계방향
-      int direction[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-      int next_row, next_col;
-      for (int i = 0; i < 4; i++)
-      {
-        next_row = TO_ROW(curr.pos) + direction[i][0];
-        next_col = TO_COL(curr.pos) + direction[i][1];
-        if ((next_row >= 0 && next_row < row)
-            && (next_col >= 0 && next_col < col)
-            && (maze[next_row][next_col].is_visited == false))
-        {
-          maze[next_row][next_col].level = curr.level + 1;
-          opening_queue.push(maze[next_row][next_col]);
-        }
-      }
-    }
-  }
-}
+int maze[100][100];
+bool visited[100][100];
+int direction[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 
 
 int main()
@@ -61,15 +19,38 @@ int main()
   {
     for (int j = 0; j < m; j++)
     {
-      maze[i][j].pos = i*100 + j;
-      maze[i][j].level = 1;
-      char tmp;
-      cin >> tmp;
-      maze[i][j].is_visited = (tmp == '0')? true : false;
+      char ch;
+      cin >> ch;
+      maze[i][j] = (ch == '1')? 1 : 0;
     }
   }
 
-  cout << solve(maze, n, m) << endl;
+  queue< pair<int, int> > q;
+  q.push({0, 0});
+  visited[0][0] = true;
+  while (q.empty() == false)
+  {
+    pair<int, int> curr = q.front();
+    q.pop();
+
+    for (int i = 0; i < 4; i++)
+    {
+      int next_row = curr.first + direction[i][0];
+      int next_col = curr.second + direction[i][1];
+      if ((next_row >= 0 && next_row < n) && (next_col >= 0 && next_col < m)
+          && maze[next_row][next_col] != 0)
+      {
+        if (visited[next_row][next_col] == false)
+        {
+          q.push({next_row, next_col});
+          visited[next_row][next_col] = true;
+          maze[next_row][next_col] = maze[curr.first][curr.second] + 1;
+        }
+      }
+    }
+  }
+
+  cout << maze[n - 1][m - 1] << endl;
 
   return 0;
 }
