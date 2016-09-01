@@ -5,9 +5,13 @@
 using namespace std;
 
 
+#define TO_ROW(pos) ((pos) / 100)
+#define TO_COL(pos) ((pos) % 100)
+
+
 struct cell_t
 {
-  int row, col;
+  int pos;  // row*100 + col
   int level;
   bool is_visited;
 } maze[100][100];
@@ -24,18 +28,18 @@ int solve(cell_t (*maze)[100], int row, int col)
     opening_queue.pop();
     if (curr.is_visited == false)
     {
-      if (curr.row == row - 1 && curr.col == col - 1)
+      if (TO_ROW(curr.pos) == row - 1 && TO_COL(curr.pos) == col - 1)
         return curr.level;
 
-      maze[curr.row][curr.col].is_visited = true;
+      maze[TO_ROW(curr.pos)][TO_COL(curr.pos)].is_visited = true;
 
       // '오른쪽'부터 시계방향
       int direction[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
       int next_row, next_col;
       for (int i = 0; i < 4; i++)
       {
-        next_row = curr.row + direction[i][0];
-        next_col = curr.col + direction[i][1];
+        next_row = TO_ROW(curr.pos) + direction[i][0];
+        next_col = TO_COL(curr.pos) + direction[i][1];
         if ((next_row >= 0 && next_row < row)
             && (next_col >= 0 && next_col < col)
             && (maze[next_row][next_col].is_visited == false))
@@ -57,22 +61,12 @@ int main()
   {
     for (int j = 0; j < m; j++)
     {
-      maze[i][j].row = i;
-      maze[i][j].col = j;
+      maze[i][j].pos = i*100 + j;
       maze[i][j].level = 1;
       char tmp;
       cin >> tmp;
       maze[i][j].is_visited = (tmp == '0')? true : false;
     }
-  }
-
-  for (int i = 0; i < n; i++)
-  {
-    for (int j = 0; j < m; j++)
-    {
-      cout << !maze[i][j].is_visited << " ";
-    }
-    cout << endl;
   }
 
   cout << solve(maze, n, m) << endl;
